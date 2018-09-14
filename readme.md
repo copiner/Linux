@@ -1,3 +1,7 @@
+ping 192.168.1.76
+
+telnet 192.168.1.76 8080
+
 查看端口是否占用
 netstat -anp|grep 80
 
@@ -20,3 +24,44 @@ rpm -qa|grep vim
 
 
 `-z  ：透过 gzip  的支持进行压缩/解压缩：此时档名最好为 *.tar.gz`
+
+
+
+zip命令
+
+将/home/Blinux/html/这个目录下所有文件和文件夹打包为当前目录下的html.zip：
+```
+zip -q -r html.zip /home/Blinux/html
+```
+
+上面的命令操作是将绝对地址的文件及文件夹进行压缩，以下给出压缩相对路径目录，比如目前在Bliux这个目录下，执行以下操作可以达到以上同样的效果：
+```
+zip -q -r html.zip html
+```
+
+比如现在我的html目录下，我操作的zip压缩命令是：
+```
+zip -q -r html.zip *
+```
+
+unzip命令
+
+将压缩文件text.zip在当前目录下解压缩。
+```
+unzip test.zip
+```
+
+将压缩文件text.zip在指定目录/tmp下解压缩，如果已有相同的文件存在，要求unzip命令不覆盖原先的文件。
+```
+unzip -n test.zip -d /tmp
+```
+
+查看压缩文件目录，但不解压。
+```
+unzip -v test.zip
+```
+
+将压缩文件test.zip在指定目录/tmp下解压缩，如果已有相同的文件存在，要求unzip命令覆盖原先的文件。
+```
+unzip -o test.zip -d tmp/
+```
