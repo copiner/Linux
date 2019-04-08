@@ -11,6 +11,21 @@ ps -ef | grep node
 检测是否已经安装过Vim
 rpm -qa|grep vim
 
+查看端口是否开放
+```
+lsof -i:8090
+```
+没有任何输出则说明没有开启该端口号
+
+查看所有开启的端口号
+```
+netstat -aptn
+
+netstat -nupl
+
+netstat -ntpl
+```
+
 开放端口
 ```
 8000端口
