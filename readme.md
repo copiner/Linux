@@ -12,6 +12,15 @@ ps -ef | grep node
 rpm -qa|grep vim
 
 
+Linux下如下开启某个端口，主要是以下操作：比如我要开放8080端口：sbin/iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
+
+在命令行输入以上命令后，再输入/etc/rc.d/init.d/iptables save保存防火墙配置
+
+保存配置后我们重启防火墙服务，服务就能生效：
+具体的操作是：/etc/rc.d/init.d/iptables restart。重启后我们可以输/etc/init.d/iptables status相应的安全服务是否开启
+
+
+
 `[root@www ~]# tar [-j|-z] [cv] [-f 创建的档名] filename... <==打包与压缩`
 
 `[root@www ~]# tar [-j|-z] [tv] [-f 创建的档名]             <==察看档名`
