@@ -11,12 +11,34 @@ ps -ef | grep node
 检测是否已经安装过Vim
 rpm -qa|grep vim
 
+开放端口
+```
+8000端口
 
-Linux下如下开启某个端口，主要是以下操作：比如我要开放8080端口：sbin/iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
+sbin/iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
+```
+在命令行输入以上命令后，再输入/etc/rc.d/init.d/iptables save保存防火墙配置，
 
-在命令行输入以上命令后，再输入/etc/rc.d/init.d/iptables save保存防火墙配置
+保存防火墙配置
+```
+/etc/rc.d/init.d/iptables save
+```
+保存配置后我们重启防火墙服务，服务就能生效,
+重启防火墙服务
+```
+/etc/rc.d/init.d/iptables restart
+```
+查看安全服务是否开启
+```
+/etc/init.d/iptables status
+```
+关闭端口
+```
+iptables -A OUTPUT -p tcp --dport 8000 -j DROP
+```
 
-保存配置后我们重启防火墙服务，服务就能生效：
+
+
 具体的操作是：/etc/rc.d/init.d/iptables restart。重启后我们可以输/etc/init.d/iptables status相应的安全服务是否开启
 
 
