@@ -111,3 +111,13 @@ unzip -v test.zip
 ```
 unzip -o test.zip -d tmp/
 ```
+
+ping命令 :包的四种故障解析
+
+1、connect: Network is unreachable ： 网络不可达： 本机 路由表无法判定
+
+2、Destination Host Unreachable ： 主机不可达： 局域网中无法找到对应IP的MAC地址，无法完成封装
+
+3、destination net unreachable ： 来自于下一跳主机的回应， 本机将包转发给网关时，网关也无法到达目标网络
+
+4、没有返回：对方无法返回，或者中间的转发设备丢弃了我们的包

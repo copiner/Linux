@@ -79,10 +79,12 @@ RUNNING : 表示网卡设备已连接
 MULTICAST : 表示支持组播
 MTU : Maximum Trasmission Unit 最大传输单元(位元组), 即此介面一次所能传输的最大封包.
 Metric : 是权值之意
-RX : 是接收情形.
-TX : 是传送情形.
-collisions : 是网路讯号碰撞的意思。
-txqueuelen : 是传输缓区长度大小意思。
+RX packets : 接收到的包量，是个累计值。
+TX packets : 发送的包量，是个累计值.
+RX bytes : 表示接收的字节数.
+TX bytes : 表示发送的字节数.
+collisions : 是网路讯号碰撞的意思.
+txqueuelen : 是传输缓区长度大小意思.
 ```
 
 设置IP地址
@@ -341,24 +343,75 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 10.0.0.0        192.168.120.1   255.0.0.0       UG    0      0        0 eth0  
 default         192.168.120.240 0.0.0.0         UG    0      0        0 eth0  
 ```
-#### 设置DNS服务器
+
+
+#### 动态主机配置协议DHCP
+
+如果管理计算机有几十台，那么初始化服务器配置IP地址、网关、和子网掩码等参数是一个繁琐耗时的过程。
+如果网络结构要更改，需要重新初始化网络参数，使用动态主机配置协议DHCP(Dynamic Host Confiuration Protocol)
+则可以避免这个问题，客户端可以从DHCP服务端检索相关信息并完成相关网络配置，在系统重启后依然可以工作。
+
+DHCP提供一种动态指定IP地址和相关网络配置参数的机制。动态主机配置协议用来自动给户端分配TCP/IP信息的网络协议，
+如IP地址、网关、子网掩码等信息。每个`DHCP客户端`通过广播连接到区域内的`DHCP服务器`，该服务器会响应请求，返回包括
+IP地址、网关和其他网络配置信息。
+
+```shell
+#查找是否安装DHCP服务
+rpm -aq | grep dhcp
+
+#DHCP客户端配置
+cat /etc/sysconfig/network-scripts ifcfg-eth1
+
+BOOTPROTO=dhcp
+
+```
+
+### 域名系统DNS
+
+互联网应用越来越丰富，仅仅用IP地址标识网络上的计算机是不可能完成的任务，也没有必要，于是产生了域名系统。
+用户按域名请求某个网络服务时，域名系统负责将其解析为对应的IP地址，这便是DNS。
+
+目前网路上的域名服务系统使用最多的为BIND(Berkeley Internet Name Domain)软件，该软件实现了DNS协议。
+```shell
+rpm -aq | grep bind
+
+rpm -ivh bind-9.9.4..x84_64.rpm
+
+/etc/named.conf
+/user/lib/systemd/system/named.service
+
+/etc/init.d/named
+/var/named/oa.com.zone
+
+systemctl start named
+```
+#### 设置并测试DNS服务器
 要设置DNS服务器，通常有两个方法，第一个方法是在接口配置文件中使用DNS1和DNS2指定
 /etc/sysconfig/network-scripts ifcfg-eth1
 
 第二个方法是修改`/etc/resolv.conf`文件。
 
-查看DNS服务器,使用nslookup命令
+查看DNS服务器,使用ping、nslookup或dig命令
 ```shell
 nslookup www.mysql.com
+
+ping www.mysql.com
 ```
 
-### 其他
-ping命令 :包的四种故障解析
+### 监控网卡流量
 
-1、connect: Network is unreachable ： 网络不可达： 本机 路由表无法判定
+监控网卡流量可以使用ifconfig或者查看系统文件/proc/net/dev中的数据，
+其中`/proc/net/dev`文件中记录了不同网络接口(interface)上的各种包统计。
 
-2、Destination Host Unreachable ： 主机不可达： 局域网中无法找到对应IP的MAC地址，无法完成封装
+```shell
+cat /proc/net/dev
 
-3、destination net unreachable ： 来自于下一跳主机的回应， 本机将包转发给网关时，网关也无法到达目标网络
+Inter-|Receive                                                     |Transmit
+face  |bytes      packets errs drop fifo frame compressed multicast|bytes     packets  errs drop fifo colls carrier compressed
+lo:   574016731   197318    0    0    0     0          0         0  574016731  197318    0    0    0     0       0          0
+eth1: 14467409808 117560201 0    0    0     0          0        48  5569450808 24533230  0    0    0     0       0          0
 
-4、没有返回：对方无法返回，或者中间的转发设备丢弃了我们的包
+第一列是接口名称，lo(loopback接口)、eth1(Ethernet网卡)
+第二列大列是这个接口接收统计
+第三列大列是这个接口发送统计
+```
